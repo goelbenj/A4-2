@@ -16,6 +16,10 @@ public:
         flag.clear(std::memory_order_release);
     }
 
+    bool value() {
+        return flag.test();
+    }
+
 private:
     std::atomic_flag flag;
 };
@@ -28,11 +32,17 @@ private:
 
 Spinlock myLock;
 
+void Task(bool lock_status, int id) {
+    // Critical section
+    assert(lock_status == true);
+    std::cout << "Thread " << id << " is in the critical section." << std::endl;
+}
+
 void criticalSection(int id) {
     myLock.lock();
 
-    // Critical section
-    std::cout << "Thread " << id << " is in the critical section." << std::endl;
+    // Acquire lock before performing Task
+    Task(myLock.value(), id);
 
     myLock.unlock();
 }
