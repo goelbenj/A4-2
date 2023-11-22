@@ -10,7 +10,7 @@ struct Node {
 
 struct List {
     Node* head;  // point to head-node of the whole linked-list
-    int lock_st;  // lock status field for the whole linked-list
+    std::mutex lock_st;  // lock status field for the whole linked-list
 };
 
 void insert_sort(List* head_ref, int new_value);
