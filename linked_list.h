@@ -6,6 +6,7 @@
 struct Node {
     int value;
     Node* next;
+    std::mutex m;  // lock for node
 };
 
 struct List {
@@ -15,5 +16,6 @@ struct List {
 };
 
 void insert_glock_sort(List* head_ref, int new_value);
+void insert_flock_sort(List* head_ref, int new_value);
 
 void print_list(List* head_ref);
