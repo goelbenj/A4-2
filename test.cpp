@@ -8,7 +8,7 @@ int main(int argc, char* argv[]) {
     List* list = new List();
     insert_flock_sort(list, 40);
     insert_flock_sort(list, 50);
-    insert_flock_sort(list, 100);
+    // insert_flock_sort(list, 100);
     print_list(list);
     // insert_glock_sort(list, 40);
     // insert_glock_sort(list, 50);
