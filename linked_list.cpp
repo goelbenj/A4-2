@@ -60,23 +60,15 @@ void insert_flock_sort(List* list, int new_value) {
 
     // 5. acquire lock for head and next
     Node *current = list->head;
-    current->m.lock();
-    if (current->next != NULL) {
-        current->next->m.lock();
-    }
-
-    // 6. locate the node before insertion
     while (current->next != NULL && current->next->value < new_node->value) {
+        current->m.lock();
+        Node *prev = current;
         current = current->next;
-        current->m.unlock();
-        current->next->m.lock();
+        prev->m.unlock();
     }
 
     new_node->next = current->next;
     current->next = new_node;
-
-    // 7. release lock
-    current->next->m.unlock();
 }
 
 // void delete_glock(List* list, Node* del_node) {
