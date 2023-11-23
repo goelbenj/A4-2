@@ -1,4 +1,7 @@
 #include <atomic>
+#include <chrono>         // std::chrono
+#include <iomanip>
+#include <iostream>       // std::cout
 
 class Spinlock {
 public:
@@ -11,11 +14,17 @@ public:
         bool status = flag.test_and_set(std::memory_order_acquire);
         if (status == true) {
             int counter = 0;
+            // start timer
+            auto start = std::chrono::high_resolution_clock::now();
             while (status) {
                 counter++;
                 status = flag.test_and_set(std::memory_order_acquire);
                 // Spin until we acquire the lock
             }
+            auto stop = std::chrono::high_resolution_clock::now();
+            double diff = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count();
+            diff *= 1e-9;
+            std::cout << "Total spin duration: " << std::setw(9) << diff << " seconds\n";
             return counter;
         } else {
             return 0;
