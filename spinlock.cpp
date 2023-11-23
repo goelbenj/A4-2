@@ -55,15 +55,15 @@ Spinlock myLock;
 void Task(bool lock_status, int id) {
     // Critical section
     assert(lock_status == true);
-    std::cout << "Thread " << id << " is in the critical section." << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
 }
 
 void criticalSection(int id) {
+    // Acquire lock before performing Task
     int spincount = myLock.lock();
+    std::cout << "Thread " << id << " is in the critical section." << std::endl;
     std::cout << "Spincount of thread " << id << ": " << spincount << " spins" << std::endl;
 
-    // Acquire lock before performing Task
     Task(myLock.value(), id);
 
     myLock.unlock();
