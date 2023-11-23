@@ -2,6 +2,7 @@
 #include <chrono>         // std::chrono
 #include <iomanip>
 #include <iostream>       // std::cout
+#include <vector>
 
 class Spinlock {
 public:
@@ -52,33 +53,39 @@ private:
 
 Spinlock myLock;
 
-void Task(bool lock_status, int id) {
+void Task(bool lock_status  ) {
     // Critical section
     assert(lock_status == true);
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
 }
 
 void criticalSection(int id) {
+    auto thread_start = std::chrono::high_resolution_clock::now();
     // Acquire lock before performing Task
     int spincount = myLock.lock();
     std::cout << "Thread " << id << " is in the critical section." << std::endl;
     std::cout << "Spincount of thread " << id << ": " << spincount << " spins" << std::endl;
 
-    Task(myLock.value(), id);
+    Task(myLock.value());
 
+    auto thread_stop = std::chrono::high_resolution_clock::now();
+    double thread_diff = std::chrono::duration_cast<std::chrono::nanoseconds>(thread_stop - thread_start).count();
+    thread_diff *= 1e-9;
+    std::cout << "Total duration of thread " << id << ": " << thread_diff << " seconds\n";
+    std::cout << "EXITING THREAD " << id << "\n" << std::endl;
     myLock.unlock();
 }
 
 int main() {
     const int numThreads = 5;
-    std::thread threads[numThreads];
+    std::vector<std::thread> threads;
 
     for (int i = 0; i < numThreads; ++i) {
-        threads[i] = std::thread(criticalSection, i);
+        threads.push_back(std::thread(criticalSection, i));
     }
 
-    for (int i = 0; i < numThreads; ++i) {
-        threads[i].join();
+    for (auto& thread : threads) {
+        thread.join();
     }
 
     return 0;
